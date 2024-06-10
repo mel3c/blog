@@ -1,0 +1,436 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: volcano-admission
+  namespace: volcano-system
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: volcano-admission
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["admissionregistration.k8s.io"]
+    resources: ["mutatingwebhookconfigurations", "validatingwebhookconfigurations"]
+    verbs: ["get", "list", "watch", "create", "update"]
+  # Rules below is used generate admission service secret
+  - apiGroups: ["certificates.k8s.io"]
+    resources: ["certificatesigningrequests"]
+    verbs: ["get", "list", "create", "delete"]
+  - apiGroups: ["certificates.k8s.io"]
+    resources: ["certificatesigningrequests/approval"]
+    verbs: ["create", "update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create", "get", "patch"]
+  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
+    resources: ["queues"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get"]
+  - apiGroups: ["scheduling.incubator.k8s.io", "scheduling.volcano.sh"]
+    resources: ["podgroups"]
+    verbs: ["get", "list", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: volcano-admission-role
+subjects:
+  - kind: ServiceAccount
+    name: volcano-admission
+    namespace: volcano-system
+roleRef:
+  kind: ClusterRole
+  name: volcano-admission
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: volcano-admission-init
+  namespace: volcano-system
+  labels:
+    app: volcano-admission-init
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: volcano-admission
+      priorityClassName: system-cluster-critical
+      restartPolicy: Never
+      containers:
+        - name: main
+          image: 172.22.96.158/system_containers/vc-webhook-manager:v1.8.2
+          imagePullPolicy: Always
+          command: ["./gen-admission-secret.sh", "--service", "volcano-admission-service", "--namespace",
+                    "volcano-system", "--secret", "volcano-admission-secret"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: volcano-admission-configmap
+  namespace: volcano-system
+data:
+  volcano-admission.conf: |
+    #resourceGroups:
+    #- resourceGroup: management                    # set the resource group name
+    #  object:
+    #    key: namespace                             # set the field and the value to be matched
+    #    value:
+    #    - mng-ns-1
+    #  schedulerName: default-scheduler             # set the scheduler for patching
+    #  tolerations:                                 # set the tolerations for patching
+    #  - effect: NoSchedule
+    #    key: taint
+    #    operator: Exists
+    #  labels:
+    #    volcano.sh/nodetype: management           # set the nodeSelector for patching
+    #- resourceGroup: cpu
+    #  object:
+    #    key: annotation
+    #    value:
+    #    - "volcano.sh/resource-group: cpu"
+    #  schedulerName: volcano
+    #  labels:
+    #    volcano.sh/nodetype: cpu
+    #- resourceGroup: gpu                          # if the object is unsetted, default is:  the key is annotation,
+    #  schedulerName: volcano                      # the annotation key is fixed and is "volcano.sh/resource-group", The corresponding value is the resourceGroup field
+    #  labels:
+    #    volcano.sh/nodetype: gpu
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: volcano-admission
+  name: volcano-admission-service
+  namespace: volcano-system
+spec:
+  ports:
+    - port: 443
+      protocol: TCP
+      targetPort: 8443
+  selector:
+    app: volcano-admission
+  sessionAffinity: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: volcano-admission
+  name: volcano-admission
+  namespace: volcano-system
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: volcano-admission
+  template:
+    metadata:
+      labels:
+        app: volcano-admission
+    spec:
+      serviceAccount: volcano-admission
+      priorityClassName: system-cluster-critical
+      containers:
+        - args:
+            - --enabled-admission=/jobs/mutate,/jobs/validate,/podgroups/mutate,/pods/validate,/pods/mutate,/queues/mutate,/queues/validate
+            - --tls-cert-file=/admission.local.config/certificates/tls.crt
+            - --tls-private-key-file=/admission.local.config/certificates/tls.key
+            - --ca-cert-file=/admission.local.config/certificates/ca.crt
+            - --admission-conf=/admission.local.config/configmap/volcano-admission.conf
+            - --webhook-namespace=volcano-system
+            - --webhook-service-name=volcano-admission-service
+            - --enable-healthz=true
+            - --logtostderr
+            - --port=8443
+            - -v=4
+            - 2>&1
+          image: 172.22.96.158/system_containers/vc-webhook-manager:v1.8.2
+          imagePullPolicy: Always
+          name: admission
+          volumeMounts:
+            - mountPath: /admission.local.config/certificates
+              name: admission-certs
+              readOnly: true
+            - mountPath: /admission.local.config/configmap
+              name: admission-config
+      volumes:
+        - name: admission-certs
+          secret:
+            defaultMode: 420
+            secretName: volcano-admission-secret
+        - name: admission-config
+          configMap:
+            name: volcano-admission-configmap
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: volcano-admission-service-pods-mutate
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: volcano-admission-service
+        namespace: volcano-system
+        path: /pods/mutate
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: mutatepod.volcano.sh
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - volcano-system
+            - kube-system
+    objectSelector: {}
+    reinvocationPolicy: Never
+    rules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+        resources:
+          - pods
+        scope: '*'
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: volcano-admission-service-queues-mutate
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: volcano-admission-service
+        namespace: volcano-system
+        path: /queues/mutate
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: mutatequeue.volcano.sh
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - volcano-system
+            - kube-system
+    objectSelector: {}
+    reinvocationPolicy: Never
+    rules:
+      - apiGroups:
+          - scheduling.volcano.sh
+        apiVersions:
+          - v1beta1
+        operations:
+          - CREATE
+        resources:
+          - queues
+        scope: '*'
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: volcano-admission-service-podgroups-mutate
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: volcano-admission-service
+        namespace: volcano-system
+        path: /podgroups/mutate
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: mutatepodgroup.volcano.sh
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - volcano-system
+            - kube-system
+    objectSelector: {}
+    reinvocationPolicy: Never
+    rules:
+      - apiGroups:
+          - scheduling.volcano.sh
+        apiVersions:
+          - v1beta1
+        operations:
+          - CREATE
+        resources:
+          - podgroups
+        scope: '*'
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: volcano-admission-service-jobs-mutate
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: volcano-admission-service
+        namespace: volcano-system
+        path: /jobs/mutate
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: mutatejob.volcano.sh
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - volcano-system
+            - kube-system
+    objectSelector: {}
+    reinvocationPolicy: Never
+    rules:
+      - apiGroups:
+          - batch.volcano.sh
+        apiVersions:
+          - v1alpha1
+        operations:
+          - CREATE
+        resources:
+          - jobs
+        scope: '*'
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: volcano-admission-service-jobs-validate
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: volcano-admission-service
+        namespace: volcano-system
+        path: /jobs/validate
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: validatejob.volcano.sh
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - volcano-system
+            - kube-system
+    objectSelector: {}
+    rules:
+      - apiGroups:
+          - batch.volcano.sh
+        apiVersions:
+          - v1alpha1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - jobs
+        scope: '*'
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: volcano-admission-service-pods-validate
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: volcano-admission-service
+        namespace: volcano-system
+        path: /pods/validate
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: validatepod.volcano.sh
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - volcano-system
+            - kube-system
+    objectSelector: {}
+    rules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+        resources:
+          - pods
+        scope: '*'
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: volcano-admission-service-queues-validate
+webhooks:
+  - admissionReviewVersions:
+      - v1
+    clientConfig:
+      service:
+        name: volcano-admission-service
+        namespace: volcano-system
+        path: /queues/validate
+        port: 443
+    failurePolicy: Fail
+    matchPolicy: Equivalent
+    name: validatequeue.volcano.sh
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: NotIn
+          values:
+            - volcano-system
+            - kube-system
+    objectSelector: {}
+    rules:
+      - apiGroups:
+          - scheduling.volcano.sh
+        apiVersions:
+          - v1beta1
+        operations:
+          - CREATE
+          - UPDATE
+          - DELETE
+        resources:
+          - queues
+        scope: '*'
+    sideEffects: NoneOnDryRun
+    timeoutSeconds: 10

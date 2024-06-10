@@ -1,0 +1,2929 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>使用 kubeadm 部署 kubernetes(CRI 使用 containerd) · 个人博客</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Zhenhai Gao">
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-ancre-navigation/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-pageview-count/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-multipart/multipart.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-code/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search-pro/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-emphasize/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-flexible-alerts/style.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-advanced-emoji/emoji-website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-auto-scroll-table/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-accordion/accordion.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-toggle-chapters/toggle.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-splitter/splitter.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-tbfed-pagefooter/footer.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-donate/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-image-captions/image-captions.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-disqus/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-theme-comscore/test.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="docker-desktop.html" />
+    
+    
+    <link rel="prev" href="./" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+    
+        
+        <li>
+            <a href="https://kubernetes.io/docs/concepts/" target="_blank" class="custom-link">Kubernetes 文档</a>
+        </li>
+    
+        
+        <li>
+            <a href="https://landscape.cncf.io/" target="_blank" class="custom-link">CNCF 技术全景图</a>
+        </li>
+    
+    
+
+    
+    <li class="divider"></li>
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    前言
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Kubernetes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../introduce.html">
+            
+                <a href="../introduce.html">
+            
+                    
+                    简介
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../basic-concepts/">
+            
+                <a href="../basic-concepts/">
+            
+                    
+                    基本概念
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../architecture-design.html">
+            
+                <a href="../architecture-design.html">
+            
+                    
+                    架构设计
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../dashboard/">
+            
+                <a href="../dashboard/">
+            
+                    
+                    集群监控仪表盘
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="../kubectl/">
+            
+                <a href="../kubectl/">
+            
+                    
+                    kubectl
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.5.1" data-path="../kubectl/namespace/">
+            
+                <a href="../kubectl/namespace/">
+            
+                    
+                    namespace
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    集群安装部署
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter active" data-level="1.2.6.1" data-path="kubeadm.html">
+            
+                <a href="kubeadm.html">
+            
+                    
+                    使用 kubeadm 部署 kubernetes(CRI 使用 containerd)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6.2" data-path="docker-desktop.html">
+            
+                <a href="docker-desktop.html">
+            
+                    
+                    在 Docker Desktop 使用
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6.3" data-path="systemd.html">
+            
+                <a href="systemd.html">
+            
+                    
+                    一步步部署 kubernetes 集群
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6.4" data-path="dashboard.html">
+            
+                <a href="dashboard.html">
+            
+                    
+                    部署 Dashboard
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="../etcd/">
+            
+                <a href="../etcd/">
+            
+                    
+                    Etcd
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.7.1" data-path="../etcd/intro.html">
+            
+                <a href="../etcd/intro.html">
+            
+                    
+                    简介
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7.2" data-path="../etcd/install.html">
+            
+                <a href="../etcd/install.html">
+            
+                    
+                    安装
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7.3" data-path="../etcd/cluster.html">
+            
+                <a href="../etcd/cluster.html">
+            
+                    
+                    集群
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7.4" data-path="../etcd/etcdctl.html">
+            
+                <a href="../etcd/etcdctl.html">
+            
+                    
+                    使用 etcdctl
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8" data-path="../batch-schedule/">
+            
+                <a href="../batch-schedule/">
+            
+                    
+                    批量调度
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.8.1" data-path="../batch-schedule/volcano/">
+            
+                <a href="../batch-schedule/volcano/">
+            
+                    
+                    Volcano
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8.2" data-path="../batch-schedule/kueue/">
+            
+                <a href="../batch-schedule/kueue/">
+            
+                    
+                    Kueue
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../../docker/">
+            
+                <a href="../../docker/">
+            
+                    
+                    Docker
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../../docker/introduction/">
+            
+                <a href="../../docker/introduction/">
+            
+                    
+                    Docker 简介
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1.1" data-path="../../docker/introduction/what.html">
+            
+                <a href="../../docker/introduction/what.html">
+            
+                    
+                    什么是 Docker
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.2" data-path="../../docker/introduction/why.html">
+            
+                <a href="../../docker/introduction/why.html">
+            
+                    
+                    为什么要用 Docker
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="../../docker/basic-concept/">
+            
+                <a href="../../docker/basic-concept/">
+            
+                    
+                    基本概念
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1" data-path="../../docker/basic-concept/image.html">
+            
+                <a href="../../docker/basic-concept/image.html">
+            
+                    
+                    镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2" data-path="../../docker/basic-concept/container.html">
+            
+                <a href="../../docker/basic-concept/container.html">
+            
+                    
+                    容器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3" data-path="../../docker/basic-concept/repository.html">
+            
+                <a href="../../docker/basic-concept/repository.html">
+            
+                    
+                    仓库
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3" data-path="../../docker/docker-install/">
+            
+                <a href="../../docker/docker-install/">
+            
+                    
+                    安装 Docker
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.3.1" data-path="../../docker/docker-install/ubuntu.html">
+            
+                <a href="../../docker/docker-install/ubuntu.html">
+            
+                    
+                    Ubuntu
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.2" data-path="../../docker/docker-install/debian.html">
+            
+                <a href="../../docker/docker-install/debian.html">
+            
+                    
+                    Debian
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.3" data-path="../../docker/docker-install/fedora.html">
+            
+                <a href="../../docker/docker-install/fedora.html">
+            
+                    
+                    Fedora
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.4" data-path="../../docker/docker-install/centos.html">
+            
+                <a href="../../docker/docker-install/centos.html">
+            
+                    
+                    CentOS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.5" data-path="../../docker/docker-install/raspberry-pi.html">
+            
+                <a href="../../docker/docker-install/raspberry-pi.html">
+            
+                    
+                    Raspberry Pi
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.6" data-path="../../docker/docker-install/offline.html">
+            
+                <a href="../../docker/docker-install/offline.html">
+            
+                    
+                    Linux 离线安装
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.7" data-path="../../docker/docker-install/mac.html">
+            
+                <a href="../../docker/docker-install/mac.html">
+            
+                    
+                    macOS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.8" data-path="../../docker/docker-install/windows.html">
+            
+                <a href="../../docker/docker-install/windows.html">
+            
+                    
+                    Windows 10
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.9" data-path="../../docker/docker-install/mirror.html">
+            
+                <a href="../../docker/docker-install/mirror.html">
+            
+                    
+                    镜像加速器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.3.10" data-path="../../docker/docker-install/experimental.html">
+            
+                <a href="../../docker/docker-install/experimental.html">
+            
+                    
+                    开启实验特性
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4" data-path="../../docker/docker-image/">
+            
+                <a href="../../docker/docker-image/">
+            
+                    
+                    操作镜像
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.4.1" data-path="../../docker/docker-image/pull.html">
+            
+                <a href="../../docker/docker-image/pull.html">
+            
+                    
+                    获取镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.2" data-path="../../docker/docker-image/list.html">
+            
+                <a href="../../docker/docker-image/list.html">
+            
+                    
+                    列出镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.3" data-path="../../docker/docker-image/rm.html">
+            
+                <a href="../../docker/docker-image/rm.html">
+            
+                    
+                    删除本地镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.4" data-path="../../docker/docker-image/commit.html">
+            
+                <a href="../../docker/docker-image/commit.html">
+            
+                    
+                    利用 commit 理解镜像构成
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.5" data-path="../../docker/docker-image/build.html">
+            
+                <a href="../../docker/docker-image/build.html">
+            
+                    
+                    使用 Dockerfile 定制镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6" data-path="../../docker/docker-image/dockerfile/">
+            
+                <a href="../../docker/docker-image/dockerfile/">
+            
+                    
+                    Dockerfile 指令详解
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.4.6.1" data-path="../../docker/docker-image/dockerfile/copy.html">
+            
+                <a href="../../docker/docker-image/dockerfile/copy.html">
+            
+                    
+                    COPY 复制文件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.2" data-path="../../docker/docker-image/dockerfile/add.html">
+            
+                <a href="../../docker/docker-image/dockerfile/add.html">
+            
+                    
+                    ADD 更高级的复制文件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.3" data-path="../../docker/docker-image/dockerfile/cmd.html">
+            
+                <a href="../../docker/docker-image/dockerfile/cmd.html">
+            
+                    
+                    CMD 容器启动命令
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.4" data-path="../../docker/docker-image/dockerfile/entrypoint.html">
+            
+                <a href="../../docker/docker-image/dockerfile/entrypoint.html">
+            
+                    
+                    ENTRYPOINT 入口点
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.5" data-path="../../docker/docker-image/dockerfile/env.html">
+            
+                <a href="../../docker/docker-image/dockerfile/env.html">
+            
+                    
+                    ENV 设置环境变量
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.6" data-path="../../docker/docker-image/dockerfile/arg.html">
+            
+                <a href="../../docker/docker-image/dockerfile/arg.html">
+            
+                    
+                    ARG 构建参数
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.7" data-path="../../docker/docker-image/dockerfile/volume.html">
+            
+                <a href="../../docker/docker-image/dockerfile/volume.html">
+            
+                    
+                    VOLUME 定义匿名卷
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.8" data-path="../../docker/docker-image/dockerfile/expose.html">
+            
+                <a href="../../docker/docker-image/dockerfile/expose.html">
+            
+                    
+                    EXPOSE 暴露端口
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.9" data-path="../../docker/docker-image/dockerfile/workdir.html">
+            
+                <a href="../../docker/docker-image/dockerfile/workdir.html">
+            
+                    
+                    WORKDIR 指定工作目录
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.10" data-path="../../docker/docker-image/dockerfile/user.html">
+            
+                <a href="../../docker/docker-image/dockerfile/user.html">
+            
+                    
+                    USER 指定当前用户
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.11" data-path="../../docker/docker-image/dockerfile/healthcheck.html">
+            
+                <a href="../../docker/docker-image/dockerfile/healthcheck.html">
+            
+                    
+                    HEALTHCHECK 健康检查
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.12" data-path="../../docker/docker-image/dockerfile/onbuild.html">
+            
+                <a href="../../docker/docker-image/dockerfile/onbuild.html">
+            
+                    
+                    ONBUILD 为他人作嫁衣裳
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.13" data-path="../../docker/docker-image/dockerfile/label.html">
+            
+                <a href="../../docker/docker-image/dockerfile/label.html">
+            
+                    
+                    LABEL 为镜像添加元数据
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.14" data-path="../../docker/docker-image/dockerfile/shell.html">
+            
+                <a href="../../docker/docker-image/dockerfile/shell.html">
+            
+                    
+                    SHELL 指令
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.6.15" data-path="../../docker/docker-image/dockerfile/references.html">
+            
+                <a href="../../docker/docker-image/dockerfile/references.html">
+            
+                    
+                    参考文档
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.7" data-path="../../docker/docker-image/multistage-builds/">
+            
+                <a href="../../docker/docker-image/multistage-builds/">
+            
+                    
+                    Dockerfile 多阶段构建
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.4.7.1" data-path="../../docker/docker-image/multistage-builds/laravel.html">
+            
+                <a href="../../docker/docker-image/multistage-builds/laravel.html">
+            
+                    
+                    实战多阶段构建 Laravel 镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.8" data-path="../../docker/docker-image/manifest.html">
+            
+                <a href="../../docker/docker-image/manifest.html">
+            
+                    
+                    构建多种系统架构支持的 Docker 镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.9" data-path="../../docker/docker-image/other.html">
+            
+                <a href="../../docker/docker-image/other.html">
+            
+                    
+                    其它制作镜像的方式
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.4.10" data-path="../../docker/docker-image/internal.html">
+            
+                <a href="../../docker/docker-image/internal.html">
+            
+                    
+                    实现原理
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5" data-path="../../docker/container/">
+            
+                <a href="../../docker/container/">
+            
+                    
+                    操作容器
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.5.1" data-path="../../docker/container/run.html">
+            
+                <a href="../../docker/container/run.html">
+            
+                    
+                    启动
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.2" data-path="../../docker/container/daemon.html">
+            
+                <a href="../../docker/container/daemon.html">
+            
+                    
+                    守护态运行
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.3" data-path="../../docker/container/stop.html">
+            
+                <a href="../../docker/container/stop.html">
+            
+                    
+                    终止
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.4" data-path="../../docker/container/attach-exec.html">
+            
+                <a href="../../docker/container/attach-exec.html">
+            
+                    
+                    进入容器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.5" data-path="../../docker/container/import-export.html">
+            
+                <a href="../../docker/container/import-export.html">
+            
+                    
+                    导出和导入
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.5.6" data-path="../../docker/container/rm.html">
+            
+                <a href="../../docker/container/rm.html">
+            
+                    
+                    删除
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6" data-path="../../docker/repository/">
+            
+                <a href="../../docker/repository/">
+            
+                    
+                    访问仓库
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.6.1" data-path="../../docker/repository/dockerhub.html">
+            
+                <a href="../../docker/repository/dockerhub.html">
+            
+                    
+                    Docker Hub
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.2" data-path="../../docker/repository/registry.html">
+            
+                <a href="../../docker/repository/registry.html">
+            
+                    
+                    私有仓库
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.3" data-path="../../docker/repository/registry-auth.html">
+            
+                <a href="../../docker/repository/registry-auth.html">
+            
+                    
+                    私有仓库高级配置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.6.4" data-path="../../docker/repository/nexus3-registry.html">
+            
+                <a href="../../docker/repository/nexus3-registry.html">
+            
+                    
+                    Nexus 3
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7" data-path="../../docker/data-management/">
+            
+                <a href="../../docker/data-management/">
+            
+                    
+                    数据管理
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.7.1" data-path="../../docker/data-management/volume.html">
+            
+                <a href="../../docker/data-management/volume.html">
+            
+                    
+                    数据卷
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.7.2" data-path="../../docker/data-management/bind-mounts.html">
+            
+                <a href="../../docker/data-management/bind-mounts.html">
+            
+                    
+                    挂载主机目录
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8" data-path="../../docker/network/">
+            
+                <a href="../../docker/network/">
+            
+                    
+                    使用网络
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.8.1" data-path="../../docker/network/port-mapping.html">
+            
+                <a href="../../docker/network/port-mapping.html">
+            
+                    
+                    外部访问容器
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8.2" data-path="../../docker/network/linking.html">
+            
+                <a href="../../docker/network/linking.html">
+            
+                    
+                    容器互联
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.8.3" data-path="../../docker/network/dns.html">
+            
+                <a href="../../docker/network/dns.html">
+            
+                    
+                    配置 DNS
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9" data-path="../../docker/advanced-network/">
+            
+                <a href="../../docker/advanced-network/">
+            
+                    
+                    高级网络配置
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.9.1" data-path="../../docker/advanced-network/quick-guide.html">
+            
+                <a href="../../docker/advanced-network/quick-guide.html">
+            
+                    
+                    快速配置指南
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.2" data-path="../../docker/advanced-network/access-control.html">
+            
+                <a href="../../docker/advanced-network/access-control.html">
+            
+                    
+                    容器访问控制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.3" data-path="../../docker/advanced-network/port-mapping.html">
+            
+                <a href="../../docker/advanced-network/port-mapping.html">
+            
+                    
+                    端口映射实现
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.4" data-path="../../docker/advanced-network/docker0.html">
+            
+                <a href="../../docker/advanced-network/docker0.html">
+            
+                    
+                    配置 docker0 网桥
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.5" data-path="../../docker/advanced-network/bridge.html">
+            
+                <a href="../../docker/advanced-network/bridge.html">
+            
+                    
+                    自定义网桥
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.6" data-path="../../docker/advanced-network/example.html">
+            
+                <a href="../../docker/advanced-network/example.html">
+            
+                    
+                    工具和示例
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.7" data-path="../../docker/advanced-network/config-file.html">
+            
+                <a href="../../docker/advanced-network/config-file.html">
+            
+                    
+                    编辑网络配置文件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.9.8" data-path="../../docker/advanced-network/ptp.html">
+            
+                <a href="../../docker/advanced-network/ptp.html">
+            
+                    
+                    实例：创建一个点到点连接
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10" data-path="../../docker/buildx/">
+            
+                <a href="../../docker/buildx/">
+            
+                    
+                    Docker Buildx
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.10.1" data-path="../../docker/buildx/buildkit.html">
+            
+                <a href="../../docker/buildx/buildkit.html">
+            
+                    
+                    BuildKit
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.2" data-path="../../docker/buildx/buildx.html">
+            
+                <a href="../../docker/buildx/buildx.html">
+            
+                    
+                    使用 buildx 构建镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.10.3" data-path="../../docker/buildx/multi-arch-images.html">
+            
+                <a href="../../docker/buildx/multi-arch-images.html">
+            
+                    
+                    使用 buildx 构建多种系统架构支持的 Docker 镜像
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11" data-path="../../docker/docker-compose/">
+            
+                <a href="../../docker/docker-compose/">
+            
+                    
+                    Docker Compose
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.11.1" data-path="../../docker/docker-compose/introduction.html">
+            
+                <a href="../../docker/docker-compose/introduction.html">
+            
+                    
+                    简介
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.2" data-path="../../docker/docker-compose/v2.html">
+            
+                <a href="../../docker/docker-compose/v2.html">
+            
+                    
+                    Compose v2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.3" data-path="../../docker/docker-compose/install.html">
+            
+                <a href="../../docker/docker-compose/install.html">
+            
+                    
+                    安装与卸载
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.4" data-path="../../docker/docker-compose/usage.html">
+            
+                <a href="../../docker/docker-compose/usage.html">
+            
+                    
+                    使用
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.5" data-path="../../docker/docker-compose/commands.html">
+            
+                <a href="../../docker/docker-compose/commands.html">
+            
+                    
+                    命令说明
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.6" data-path="../../docker/docker-compose/compose-file.html">
+            
+                <a href="../../docker/docker-compose/compose-file.html">
+            
+                    
+                    Compose 模板文件
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.7" data-path="../../docker/docker-compose/django.html">
+            
+                <a href="../../docker/docker-compose/django.html">
+            
+                    
+                    实战 Django
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.8" data-path="../../docker/docker-compose/rails.html">
+            
+                <a href="../../docker/docker-compose/rails.html">
+            
+                    
+                    实战 Rails
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.9" data-path="../../docker/docker-compose/wordpress.html">
+            
+                <a href="../../docker/docker-compose/wordpress.html">
+            
+                    
+                    实战 WordPress
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.11.10" data-path="../../docker/docker-compose/lnmp.html">
+            
+                <a href="../../docker/docker-compose/lnmp.html">
+            
+                    
+                    实战 LNMP
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12" data-path="../../docker/security/">
+            
+                <a href="../../docker/security/">
+            
+                    
+                    安全
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.12.1" data-path="../../docker/security/kernel-ns.html">
+            
+                <a href="../../docker/security/kernel-ns.html">
+            
+                    
+                    内核命名空间
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12.2" data-path="../../docker/security/control-group.html">
+            
+                <a href="../../docker/security/control-group.html">
+            
+                    
+                    控制组
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12.3" data-path="../../docker/security/daemon-sec.html">
+            
+                <a href="../../docker/security/daemon-sec.html">
+            
+                    
+                    服务端防护
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12.4" data-path="../../docker/security/kernel-capability.html">
+            
+                <a href="../../docker/security/kernel-capability.html">
+            
+                    
+                    内核能力机制
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12.5" data-path="../../docker/security/other-feature.html">
+            
+                <a href="../../docker/security/other-feature.html">
+            
+                    
+                    其它安全特性
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.12.6" data-path="../../docker/security/summary.html">
+            
+                <a href="../../docker/security/summary.html">
+            
+                    
+                    总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13" data-path="../../docker/underly/">
+            
+                <a href="../../docker/underly/">
+            
+                    
+                    底层实现
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.13.1" data-path="../../docker/underly/arch.html">
+            
+                <a href="../../docker/underly/arch.html">
+            
+                    
+                    基本架构
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13.2" data-path="../../docker/underly/namespace.html">
+            
+                <a href="../../docker/underly/namespace.html">
+            
+                    
+                    命名空间
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13.3" data-path="../../docker/underly/cgroups.html">
+            
+                <a href="../../docker/underly/cgroups.html">
+            
+                    
+                    控制组
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13.4" data-path="../../docker/underly/ufs.html">
+            
+                <a href="../../docker/underly/ufs.html">
+            
+                    
+                    联合文件系统
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13.5" data-path="../../docker/underly/container-format.html">
+            
+                <a href="../../docker/underly/container-format.html">
+            
+                    
+                    容器格式
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.13.6" data-path="../../docker/underly/network.html">
+            
+                <a href="../../docker/underly/network.html">
+            
+                    
+                    网络
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14" data-path="../../docker/cases/os/">
+            
+                <a href="../../docker/cases/os/">
+            
+                    
+                    实战案例 - 操作系统
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.14.1" data-path="../../docker/cases/os/busybox.html">
+            
+                <a href="../../docker/cases/os/busybox.html">
+            
+                    
+                    Busybox
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.2" data-path="../../docker/cases/os/alpine.html">
+            
+                <a href="../../docker/cases/os/alpine.html">
+            
+                    
+                    Alpine
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.3" data-path="../../docker/cases/os/debian.html">
+            
+                <a href="../../docker/cases/os/debian.html">
+            
+                    
+                    Debian Ubuntu
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.4" data-path="../../docker/cases/os/centos.html">
+            
+                <a href="../../docker/cases/os/centos.html">
+            
+                    
+                    CentOS Fedora
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.14.5" data-path="../../docker/cases/os/summary.html">
+            
+                <a href="../../docker/cases/os/summary.html">
+            
+                    
+                    本章小结
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15" data-path="../../docker/appendix/">
+            
+                <a href="../../docker/appendix/">
+            
+                    
+                    附录
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.15.1" data-path="../../docker/appendix/faq/">
+            
+                <a href="../../docker/appendix/faq/">
+            
+                    
+                    附录一：常见问题总结
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2" data-path="../../docker/appendix/repo/">
+            
+                <a href="../../docker/appendix/repo/">
+            
+                    
+                    附录二：热门镜像介绍
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.15.2.1" data-path="../../docker/appendix/repo/ubuntu.html">
+            
+                <a href="../../docker/appendix/repo/ubuntu.html">
+            
+                    
+                    Ubuntu
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.2" data-path="../../docker/appendix/repo/centos.html">
+            
+                <a href="../../docker/appendix/repo/centos.html">
+            
+                    
+                    CentOS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.3" data-path="../../docker/appendix/repo/nginx.html">
+            
+                <a href="../../docker/appendix/repo/nginx.html">
+            
+                    
+                    Nginx
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.4" data-path="../../docker/appendix/repo/php.html">
+            
+                <a href="../../docker/appendix/repo/php.html">
+            
+                    
+                    PHP
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.5" data-path="../../docker/appendix/repo/nodejs.html">
+            
+                <a href="../../docker/appendix/repo/nodejs.html">
+            
+                    
+                    Node.js
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.6" data-path="../../docker/appendix/repo/mysql.html">
+            
+                <a href="../../docker/appendix/repo/mysql.html">
+            
+                    
+                    MySQL
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.7" data-path="../../docker/appendix/repo/wordpress.html">
+            
+                <a href="../../docker/appendix/repo/wordpress.html">
+            
+                    
+                    WordPress
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.8" data-path="../../docker/appendix/repo/mongodb.html">
+            
+                <a href="../../docker/appendix/repo/mongodb.html">
+            
+                    
+                    MongoDB
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.9" data-path="../../docker/appendix/repo/redis.html">
+            
+                <a href="../../docker/appendix/repo/redis.html">
+            
+                    
+                    Redis
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.2.10" data-path="../../docker/appendix/repo/minio.html">
+            
+                <a href="../../docker/appendix/repo/minio.html">
+            
+                    
+                    Minio
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.3" data-path="../../docker/appendix/command/">
+            
+                <a href="../../docker/appendix/command/">
+            
+                    
+                    附录三：Docker 命令查询
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.15.3.1" data-path="../../docker/appendix/command/docker.html">
+            
+                <a href="../../docker/appendix/command/docker.html">
+            
+                    
+                    客户端命令 - docker
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.3.2" data-path="../../docker/appendix/command/dockerd.html">
+            
+                <a href="../../docker/appendix/command/dockerd.html">
+            
+                    
+                    服务端命令 - dockerd
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.4" data-path="../../docker/appendix/best-practices.html">
+            
+                <a href="../../docker/appendix/best-practices.html">
+            
+                    
+                    附录四：Dockerfile 最佳实践
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.5" data-path="../../docker/appendix/debug.html">
+            
+                <a href="../../docker/appendix/debug.html">
+            
+                    
+                    附录五：如何调试 Docker
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.15.6" data-path="../../docker/appendix/resources.html">
+            
+                <a href="../../docker/appendix/resources.html">
+            
+                    
+                    附录六：资源链接
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../../cicd/">
+            
+                <a href="../../cicd/">
+            
+                    
+                    CI/CD
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../../cicd/actions/">
+            
+                <a href="../../cicd/actions/">
+            
+                    
+                    GitHub Actions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../../cicd/drone/">
+            
+                <a href="../../cicd/drone/">
+            
+                    
+                    Drone
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.2.1" data-path="../../cicd/drone/install.html">
+            
+                <a href="../../cicd/drone/install.html">
+            
+                    
+                    部署 Drone
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="../../github/">
+            
+                <a href="../../github/">
+            
+                    
+                    GitHub
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="../../database/">
+            
+                <a href="../../database/">
+            
+                    
+                    数据库
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1" data-path="../../database/postgresql/">
+            
+                <a href="../../database/postgresql/">
+            
+                    
+                    PostgreSQL
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1.1" data-path="../../database/postgresql/logging.html">
+            
+                <a href="../../database/postgresql/logging.html">
+            
+                    
+                    日志设置
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6.1.2" data-path="../../database/postgresql/backup-restore/">
+            
+                <a href="../../database/postgresql/backup-restore/">
+            
+                    
+                    备份/恢复
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.6.1.2.1" data-path="../../database/postgresql/backup-restore/wal-g.html">
+            
+                <a href="../../database/postgresql/backup-restore/wal-g.html">
+            
+                    
+                    WAL-G
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >使用 kubeadm 部署 kubernetes(CRI 使用 containerd)</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-anchor"></i><ul><li><span class="title-icon "></span><a href="#&#x4F7F;&#x7528;-kubeadm-&#x90E8;&#x7F72;-kubernetescri-&#x4F7F;&#x7528;-containerd"><b></b>&#x4F7F;&#x7528; kubeadm &#x90E8;&#x7F72; kubernetes(CRI &#x4F7F;&#x7528; containerd)</a></li><ul><li><span class="title-icon "></span><a href="#&#x5B89;&#x88C5;-containerd"><b></b>&#x5B89;&#x88C5; containerd</a></li><li><span class="title-icon "></span><a href="#&#x914D;&#x7F6E;-containerd"><b></b>&#x914D;&#x7F6E; containerd</a></li><li><span class="title-icon "></span><a href="#&#x5B89;&#x88C5;-kubelet-kubeadm-kubectl-cri-tools-kubernetes-cni"><b></b>&#x5B89;&#x88C5; kubelet kubeadm kubectl cri-tools kubernetes-cni</a></li><ul><li><span class="title-icon "></span><a href="#ubuntudebian"><b></b>Ubuntu/Debian</a></li><li><span class="title-icon "></span><a href="#centosfedora"><b></b>CentOS/Fedora</a></li></ul><li><span class="title-icon "></span><a href="#&#x4FEE;&#x6539;&#x5185;&#x6838;&#x7684;&#x8FD0;&#x884C;&#x53C2;&#x6570;"><b></b>&#x4FEE;&#x6539;&#x5185;&#x6838;&#x7684;&#x8FD0;&#x884C;&#x53C2;&#x6570;</a></li><li><span class="title-icon "></span><a href="#&#x914D;&#x7F6E;-kubelet"><b></b>&#x914D;&#x7F6E; kubelet</a></li><ul><li><span class="title-icon "></span><a href="#&#x4FEE;&#x6539;-kubeletservice"><b></b>&#x4FEE;&#x6539; kubelet.service</a></li></ul><li><span class="title-icon "></span><a href="#&#x90E8;&#x7F72;"><b></b>&#x90E8;&#x7F72;</a></li><ul><li><span class="title-icon "></span><a href="#master"><b></b>master</a></li><li><span class="title-icon "></span><a href="#node-&#x5DE5;&#x4F5C;&#x8282;&#x70B9;"><b></b>node &#x5DE5;&#x4F5C;&#x8282;&#x70B9;</a></li></ul><li><span class="title-icon "></span><a href="#&#x67E5;&#x770B;&#x670D;&#x52A1;"><b></b>&#x67E5;&#x770B;&#x670D;&#x52A1;</a></li><ul><li><span class="title-icon "></span><a href="#&#x4E3B;&#x8282;&#x70B9;&#x670D;&#x52A1;"><b></b>&#x4E3B;&#x8282;&#x70B9;&#x670D;&#x52A1;</a></li><li><span class="title-icon "></span><a href="#&#x5DE5;&#x4F5C;&#x8282;&#x70B9;&#x670D;&#x52A1;"><b></b>&#x5DE5;&#x4F5C;&#x8282;&#x70B9;&#x670D;&#x52A1;</a></li><li><span class="title-icon "></span><a href="#&#x5176;&#x5B83;&#x670D;&#x52A1;"><b></b>&#x5176;&#x5B83;&#x670D;&#x52A1;</a></li></ul><li><span class="title-icon "></span><a href="#&#x4F7F;&#x7528;"><b></b>&#x4F7F;&#x7528;</a></li><li><span class="title-icon "></span><a href="#&#x90E8;&#x7F72;-cni"><b></b>&#x90E8;&#x7F72; CNI</a></li><ul><li><span class="title-icon "></span><a href="#flannel"><b></b>flannel</a></li></ul><li><span class="title-icon "></span><a href="#master-&#x8282;&#x70B9;&#x9ED8;&#x8BA4;&#x4E0D;&#x80FD;&#x8FD0;&#x884C;-pod"><b></b>master &#x8282;&#x70B9;&#x9ED8;&#x8BA4;&#x4E0D;&#x80FD;&#x8FD0;&#x884C; pod</a></li><li><span class="title-icon "></span><a href="#&#x53C2;&#x8003;&#x6587;&#x6863;"><b></b>&#x53C2;&#x8003;&#x6587;&#x6863;</a></li></ul></ul></div><a href="#&#x4F7F;&#x7528;-kubeadm-&#x90E8;&#x7F72;-kubernetescri-&#x4F7F;&#x7528;-containerd" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="&#x4F7F;&#x7528;-kubeadm-&#x90E8;&#x7F72;-kubernetescri-&#x4F7F;&#x7528;-containerd"><a name="&#x4F7F;&#x7528;-kubeadm-&#x90E8;&#x7F72;-kubernetescri-&#x4F7F;&#x7528;-containerd" class="anchor-navigation-ex-anchor" href="#&#x4F7F;&#x7528;-kubeadm-&#x90E8;&#x7F72;-kubernetescri-&#x4F7F;&#x7528;-containerd"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4F7F;&#x7528; kubeadm &#x90E8;&#x7F72; kubernetes(CRI &#x4F7F;&#x7528; containerd)</h1>
+<p><code>kubeadm</code> &#x63D0;&#x4F9B;&#x4E86; <code>kubeadm init</code> &#x4EE5;&#x53CA; <code>kubeadm join</code> &#x8FD9;&#x4E24;&#x4E2A;&#x547D;&#x4EE4;&#x4F5C;&#x4E3A;&#x5FEB;&#x901F;&#x521B;&#x5EFA; <code>kubernetes</code> &#x96C6;&#x7FA4;&#x7684;&#x6700;&#x4F73;&#x5B9E;&#x8DF5;&#x3002;</p>
+<h2 id="&#x5B89;&#x88C5;-containerd"><a name="&#x5B89;&#x88C5;-containerd" class="anchor-navigation-ex-anchor" href="#&#x5B89;&#x88C5;-containerd"><i class="fa fa-link" aria-hidden="true"></i></a>&#x5B89;&#x88C5; containerd</h2>
+<p>&#x53C2;&#x8003; <a href="../../install">&#x5B89;&#x88C5; Docker</a> &#x4E00;&#x8282;&#x6DFB;&#x52A0; apt/yum &#x6E90;&#xFF0C;&#x4E4B;&#x540E;&#x6267;&#x884C;&#x5982;&#x4E0B;&#x547D;&#x4EE4;&#x3002;</p>
+<pre class="language-"><code class="lang-bash"><span class="token comment"># debian &#x7CFB;</span>
+$ <span class="token function">sudo</span> <span class="token function">apt</span> <span class="token function">install</span> containerd.io
+
+<span class="token comment"># rhel &#x7CFB;</span>
+$ <span class="token function">sudo</span> yum <span class="token function">install</span> containerd.io
+</code></pre>
+<h2 id="&#x914D;&#x7F6E;-containerd"><a name="&#x914D;&#x7F6E;-containerd" class="anchor-navigation-ex-anchor" href="#&#x914D;&#x7F6E;-containerd"><i class="fa fa-link" aria-hidden="true"></i></a>&#x914D;&#x7F6E; containerd</h2>
+<p>&#x65B0;&#x5EFA; <code>/etc/systemd/system/cri-containerd.service</code> &#x6587;&#x4EF6;</p>
+<pre class="language-"><code>[Unit]
+Description=containerd container runtime for kubernetes
+Documentation=https://containerd.io
+After=network.target local-fs.target
+
+[Service]
+ExecStartPre=-/sbin/modprobe overlay
+ExecStart=/usr/bin/containerd --config //etc/cri-containerd/config.toml
+
+Type=notify
+Delegate=yes
+KillMode=process
+Restart=always
+RestartSec=5
+# Having non-zero Limit*s causes performance problems due to accounting overhead
+# in the kernel. We recommend using cgroups to do container-local accounting.
+LimitNPROC=infinity
+LimitCORE=infinity
+LimitNOFILE=infinity
+# Comment TasksMax if your systemd version does not supports it.
+# Only systemd 226 and above support this version.
+TasksMax=infinity
+OOMScoreAdjust=-999
+
+[Install]
+WantedBy=multi-user.target
+</code></pre><p>&#x65B0;&#x5EFA; <code>/etc/cri-containerd/config.toml</code> containerd &#x914D;&#x7F6E;&#x6587;&#x4EF6;</p>
+<pre class="language-"><code class="lang-toml"><span class="token key property">version</span> <span class="token punctuation">=</span> <span class="token number">2</span>
+<span class="token comment"># persistent data location</span>
+<span class="token key property">root</span> <span class="token punctuation">=</span> <span class="token string">&quot;/var/lib/cri-containerd&quot;</span>
+<span class="token comment"># runtime state information</span>
+<span class="token key property">state</span> <span class="token punctuation">=</span> <span class="token string">&quot;/run/cri-containerd&quot;</span>
+<span class="token key property">plugin_dir</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+<span class="token key property">disabled_plugins</span> <span class="token punctuation">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+<span class="token key property">required_plugins</span> <span class="token punctuation">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+<span class="token comment"># set containerd&apos;s OOM score</span>
+<span class="token key property">oom_score</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+
+<span class="token punctuation">[</span><span class="token table class-name">grpc</span><span class="token punctuation">]</span>
+  <span class="token key property">address</span> <span class="token punctuation">=</span> <span class="token string">&quot;/run/cri-containerd/cri-containerd.sock&quot;</span>
+  <span class="token key property">tcp_address</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+  <span class="token key property">tcp_tls_cert</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+  <span class="token key property">tcp_tls_key</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+  <span class="token comment"># socket uid</span>
+  <span class="token key property">uid</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+  <span class="token comment"># socket gid</span>
+  <span class="token key property">gid</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+  <span class="token key property">max_recv_message_size</span> <span class="token punctuation">=</span> <span class="token number">16777216</span>
+  <span class="token key property">max_send_message_size</span> <span class="token punctuation">=</span> <span class="token number">16777216</span>
+
+<span class="token punctuation">[</span><span class="token table class-name">debug</span><span class="token punctuation">]</span>
+  <span class="token key property">address</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+  <span class="token key property">format</span> <span class="token punctuation">=</span> <span class="token string">&quot;json&quot;</span>
+  <span class="token key property">uid</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+  <span class="token key property">gid</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+  <span class="token key property">level</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+
+<span class="token punctuation">[</span><span class="token table class-name">metrics</span><span class="token punctuation">]</span>
+  <span class="token key property">address</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1:1338&quot;</span>
+  <span class="token key property">grpc_histogram</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+
+<span class="token punctuation">[</span><span class="token table class-name">cgroup</span><span class="token punctuation">]</span>
+  <span class="token key property">path</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+
+<span class="token punctuation">[</span><span class="token table class-name">timeouts</span><span class="token punctuation">]</span>
+  <span class="token key property">&quot;io.containerd.timeout.shim.cleanup&quot;</span> <span class="token punctuation">=</span> <span class="token string">&quot;5s&quot;</span>
+  <span class="token key property">&quot;io.containerd.timeout.shim.load&quot;</span> <span class="token punctuation">=</span> <span class="token string">&quot;5s&quot;</span>
+  <span class="token key property">&quot;io.containerd.timeout.shim.shutdown&quot;</span> <span class="token punctuation">=</span> <span class="token string">&quot;3s&quot;</span>
+  <span class="token key property">&quot;io.containerd.timeout.task.state&quot;</span> <span class="token punctuation">=</span> <span class="token string">&quot;2s&quot;</span>
+
+<span class="token punctuation">[</span><span class="token table class-name">plugins</span><span class="token punctuation">]</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.gc.v1.scheduler&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">pause_threshold</span> <span class="token punctuation">=</span> <span class="token number">0.02</span>
+    <span class="token key property">deletion_threshold</span> <span class="token punctuation">=</span> <span class="token number">0</span>
+    <span class="token key property">mutation_threshold</span> <span class="token punctuation">=</span> <span class="token number">100</span>
+    <span class="token key property">schedule_delay</span> <span class="token punctuation">=</span> <span class="token string">&quot;0s&quot;</span>
+    <span class="token key property">startup_delay</span> <span class="token punctuation">=</span> <span class="token string">&quot;100ms&quot;</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">disable_tcp_service</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+    <span class="token key property">stream_server_address</span> <span class="token punctuation">=</span> <span class="token string">&quot;127.0.0.1&quot;</span>
+    <span class="token key property">stream_server_port</span> <span class="token punctuation">=</span> <span class="token string">&quot;0&quot;</span>
+    <span class="token key property">stream_idle_timeout</span> <span class="token punctuation">=</span> <span class="token string">&quot;4h0m0s&quot;</span>
+    <span class="token key property">enable_selinux</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+    <span class="token key property">selinux_category_range</span> <span class="token punctuation">=</span> <span class="token number">1024</span>
+    <span class="token key property">sandbox_image</span> <span class="token punctuation">=</span> <span class="token string">&quot;registry.cn-hangzhou.aliyuncs.com/google_containers/pause:3.5&quot;</span>
+    <span class="token key property">stats_collect_period</span> <span class="token punctuation">=</span> <span class="token number">10</span>
+    <span class="token comment"># systemd_cgroup = false</span>
+    <span class="token key property">enable_tls_streaming</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+    <span class="token key property">max_container_log_line_size</span> <span class="token punctuation">=</span> <span class="token number">16384</span>
+    <span class="token key property">disable_cgroup</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+    <span class="token key property">disable_apparmor</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+    <span class="token key property">restrict_oom_score_adj</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+    <span class="token key property">max_concurrent_downloads</span> <span class="token punctuation">=</span> <span class="token number">3</span>
+    <span class="token key property">disable_proc_mount</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+    <span class="token key property">unset_seccomp_profile</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+    <span class="token key property">tolerate_missing_hugetlb_controller</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+    <span class="token key property">disable_hugetlb_controller</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+    <span class="token key property">ignore_image_defined_volumes</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+    <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd</span><span class="token punctuation">]</span>
+      <span class="token key property">snapshotter</span> <span class="token punctuation">=</span> <span class="token string">&quot;overlayfs&quot;</span>
+      <span class="token key property">default_runtime_name</span> <span class="token punctuation">=</span> <span class="token string">&quot;runc&quot;</span>
+      <span class="token key property">no_pivot</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+      <span class="token key property">disable_snapshot_annotations</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+      <span class="token key property">discard_unpacked_layers</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+      <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes</span><span class="token punctuation">]</span>
+        <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.runc</span><span class="token punctuation">]</span>
+          <span class="token key property">runtime_type</span> <span class="token punctuation">=</span> <span class="token string">&quot;io.containerd.runc.v2&quot;</span>
+          <span class="token key property">pod_annotations</span> <span class="token punctuation">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+          <span class="token key property">container_annotations</span> <span class="token punctuation">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+          <span class="token key property">privileged_without_host_devices</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+          <span class="token key property">base_runtime_spec</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+          <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.containerd.runtimes.runc.options</span><span class="token punctuation">]</span>
+            <span class="token comment"># SystemdCgroup enables systemd cgroups.</span>
+            <span class="token key property">SystemdCgroup</span> <span class="token punctuation">=</span> <span class="token boolean">true</span>
+            <span class="token comment"># BinaryName is the binary name of the runc binary.</span>
+            <span class="token comment"># BinaryName = &quot;runc&quot;</span>
+            <span class="token comment"># BinaryName = &quot;crun&quot;</span>
+            <span class="token comment"># NoPivotRoot disables pivot root when creating a container.</span>
+            <span class="token comment"># NoPivotRoot = false</span>
+
+            <span class="token comment"># NoNewKeyring disables new keyring for the container.</span>
+            <span class="token comment"># NoNewKeyring = false</span>
+
+            <span class="token comment"># ShimCgroup places the shim in a cgroup.</span>
+            <span class="token comment"># ShimCgroup = &quot;&quot;</span>
+
+            <span class="token comment"># IoUid sets the I/O&apos;s pipes uid.</span>
+            <span class="token comment"># IoUid = 0</span>
+
+            <span class="token comment"># IoGid sets the I/O&apos;s pipes gid.</span>
+            <span class="token comment"># IoGid = 0</span>
+
+            <span class="token comment"># Root is the runc root directory.</span>
+            <span class="token key property">Root</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+
+            <span class="token comment"># CriuPath is the criu binary path.</span>
+            <span class="token comment"># CriuPath = &quot;&quot;</span>
+
+            <span class="token comment"># CriuImagePath is the criu image path</span>
+            <span class="token comment"># CriuImagePath = &quot;&quot;</span>
+
+            <span class="token comment"># CriuWorkPath is the criu work path.</span>
+            <span class="token comment"># CriuWorkPath = &quot;&quot;</span>
+    <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.cni</span><span class="token punctuation">]</span>
+      <span class="token key property">bin_dir</span> <span class="token punctuation">=</span> <span class="token string">&quot;/opt/cni/bin&quot;</span>
+      <span class="token key property">conf_dir</span> <span class="token punctuation">=</span> <span class="token string">&quot;/etc/cni/net.d&quot;</span>
+      <span class="token key property">max_conf_num</span> <span class="token punctuation">=</span> <span class="token number">1</span>
+      <span class="token key property">conf_template</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+    <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.registry</span><span class="token punctuation">]</span>
+      <span class="token key property">config_path</span> <span class="token punctuation">=</span> <span class="token string">&quot;/etc/cri-containerd/certs.d&quot;</span>
+      <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.registry.headers</span><span class="token punctuation">]</span>
+        <span class="token comment"># Foo = [&quot;bar&quot;]</span>
+    <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.image_decryption</span><span class="token punctuation">]</span>
+      <span class="token key property">key_model</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+    <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.grpc.v1.cri&quot;.x509_key_pair_streaming</span><span class="token punctuation">]</span>
+      <span class="token key property">tls_cert_file</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+      <span class="token key property">tls_key_file</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.internal.v1.opt&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">path</span> <span class="token punctuation">=</span> <span class="token string">&quot;/opt/cri-containerd&quot;</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.internal.v1.restart&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">interval</span> <span class="token punctuation">=</span> <span class="token string">&quot;10s&quot;</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.metadata.v1.bolt&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">content_sharing_policy</span> <span class="token punctuation">=</span> <span class="token string">&quot;shared&quot;</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.monitor.v1.cgroups&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">no_prometheus</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.runtime.v2.task&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">platforms</span> <span class="token punctuation">=</span> <span class="token punctuation">[</span><span class="token string">&quot;linux/amd64&quot;</span><span class="token punctuation">]</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.service.v1.diff-service&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">default</span> <span class="token punctuation">=</span> <span class="token punctuation">[</span><span class="token string">&quot;walking&quot;</span><span class="token punctuation">]</span>
+  <span class="token punctuation">[</span><span class="token table class-name">plugins.&quot;io.containerd.snapshotter.v1.devmapper&quot;</span><span class="token punctuation">]</span>
+    <span class="token key property">root_path</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+    <span class="token key property">pool_name</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+    <span class="token key property">base_image_size</span> <span class="token punctuation">=</span> <span class="token string">&quot;&quot;</span>
+    <span class="token key property">async_remove</span> <span class="token punctuation">=</span> <span class="token boolean">false</span>
+</code></pre>
+<h2 id="&#x5B89;&#x88C5;-kubelet-kubeadm-kubectl-cri-tools-kubernetes-cni"><a name="&#x5B89;&#x88C5;-kubelet-kubeadm-kubectl-cri-tools-kubernetes-cni" class="anchor-navigation-ex-anchor" href="#&#x5B89;&#x88C5;-kubelet-kubeadm-kubectl-cri-tools-kubernetes-cni"><i class="fa fa-link" aria-hidden="true"></i></a>&#x5B89;&#x88C5; <strong>kubelet</strong> <strong>kubeadm</strong> <strong>kubectl</strong> <strong>cri-tools</strong> <strong>kubernetes-cni</strong></h2>
+<h3 id="ubuntudebian"><a name="ubuntudebian" class="anchor-navigation-ex-anchor" href="#ubuntudebian"><i class="fa fa-link" aria-hidden="true"></i></a>Ubuntu/Debian</h3>
+<pre class="language-"><code class="lang-bash">$ <span class="token function">apt-get</span> update <span class="token operator">&amp;&amp;</span> <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token parameter variable">-y</span> apt-transport-https
+$ <span class="token function">curl</span> https://mirrors.aliyun.com/kubernetes/apt/doc/apt-key.gpg <span class="token operator">|</span> apt-key <span class="token function">add</span> -
+
+$ <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOF<span class="token bash punctuation"> <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/apt/sources.list.d/kubernetes.list</span>
+deb https://mirrors.aliyun.com/kubernetes/apt/ kubernetes-xenial main
+EOF</span>
+
+$ <span class="token function">apt-get</span> update
+$ <span class="token function">apt-get</span> <span class="token function">install</span> <span class="token parameter variable">-y</span> kubelet kubeadm kubectl
+</code></pre>
+<h3 id="centosfedora"><a name="centosfedora" class="anchor-navigation-ex-anchor" href="#centosfedora"><i class="fa fa-link" aria-hidden="true"></i></a>CentOS/Fedora</h3>
+<pre class="language-"><code class="lang-bash">$ <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOF<span class="token bash punctuation"> <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/yum.repos.d/kubernetes.repo</span>
+[kubernetes]
+name=Kubernetes
+baseurl=https://mirrors.aliyun.com/kubernetes/yum/repos/kubernetes-el7-x86_64/
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://mirrors.aliyun.com/kubernetes/yum/doc/yum-key.gpg https://mirrors.aliyun.com/kubernetes/yum/doc/rpm-package-key.gpg
+EOF</span>
+
+$ <span class="token function">sudo</span> yum <span class="token function">install</span> <span class="token parameter variable">-y</span> kubelet kubeadm kubectl
+</code></pre>
+<h2 id="&#x4FEE;&#x6539;&#x5185;&#x6838;&#x7684;&#x8FD0;&#x884C;&#x53C2;&#x6570;"><a name="&#x4FEE;&#x6539;&#x5185;&#x6838;&#x7684;&#x8FD0;&#x884C;&#x53C2;&#x6570;" class="anchor-navigation-ex-anchor" href="#&#x4FEE;&#x6539;&#x5185;&#x6838;&#x7684;&#x8FD0;&#x884C;&#x53C2;&#x6570;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4FEE;&#x6539;&#x5185;&#x6838;&#x7684;&#x8FD0;&#x884C;&#x53C2;&#x6570;</h2>
+<pre class="language-"><code class="lang-bash">$ <span class="token function">cat</span> <span class="token operator">&lt;&lt;</span><span class="token string">EOF<span class="token bash punctuation"> <span class="token operator">|</span> <span class="token function">sudo</span> <span class="token function">tee</span> /etc/sysctl.d/99-kubernetes-cri.conf</span>
+net.bridge.bridge-nf-call-iptables  = 1
+net.ipv4.ip_forward                 = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF</span>
+
+<span class="token comment"># &#x5E94;&#x7528;&#x914D;&#x7F6E;</span>
+$ <span class="token function">sysctl</span> <span class="token parameter variable">--system</span>
+</code></pre>
+<h2 id="&#x914D;&#x7F6E;-kubelet"><a name="&#x914D;&#x7F6E;-kubelet" class="anchor-navigation-ex-anchor" href="#&#x914D;&#x7F6E;-kubelet"><i class="fa fa-link" aria-hidden="true"></i></a>&#x914D;&#x7F6E; kubelet</h2>
+<h3 id="&#x4FEE;&#x6539;-kubeletservice"><a name="&#x4FEE;&#x6539;-kubeletservice" class="anchor-navigation-ex-anchor" href="#&#x4FEE;&#x6539;-kubeletservice"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4FEE;&#x6539; <code>kubelet.service</code></h3>
+<p><code>/etc/systemd/system/kubelet.service.d/10-proxy-ipvs.conf</code> &#x5199;&#x5165;&#x4EE5;&#x4E0B;&#x5185;&#x5BB9;</p>
+<pre class="language-"><code class="lang-bash"><span class="token comment"># &#x542F;&#x7528; ipvs &#x76F8;&#x5173;&#x5185;&#x6838;&#x6A21;&#x5757;</span>
+<span class="token punctuation">[</span>Service<span class="token punctuation">]</span>
+<span class="token assign-left variable">ExecStartPre</span><span class="token operator">=</span>-/sbin/modprobe ip_vs
+<span class="token assign-left variable">ExecStartPre</span><span class="token operator">=</span>-/sbin/modprobe ip_vs_rr
+<span class="token assign-left variable">ExecStartPre</span><span class="token operator">=</span>-/sbin/modprobe ip_vs_wrr
+<span class="token assign-left variable">ExecStartPre</span><span class="token operator">=</span>-/sbin/modprobe ip_vs_sh
+</code></pre>
+<p>&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x5E94;&#x7528;&#x914D;&#x7F6E;&#x3002;</p>
+<pre class="language-"><code class="lang-bash">$ <span class="token function">sudo</span> systemctl daemon-reload
+</code></pre>
+<h2 id="&#x90E8;&#x7F72;"><a name="&#x90E8;&#x7F72;" class="anchor-navigation-ex-anchor" href="#&#x90E8;&#x7F72;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x90E8;&#x7F72;</h2>
+<h3 id="master"><a name="master" class="anchor-navigation-ex-anchor" href="#master"><i class="fa fa-link" aria-hidden="true"></i></a>master</h3>
+<pre class="language-"><code class="lang-bash">$ systemctl <span class="token builtin class-name">enable</span> cri-containerd
+
+$ systemctl start cri-containerd
+
+$ <span class="token function">sudo</span> kubeadm init <span class="token punctuation">\</span>
+      --image-repository registry.cn-hangzhou.aliyuncs.com/google_containers <span class="token punctuation">\</span>
+      --pod-network-cidr <span class="token number">10.244</span>.0.0/16 <span class="token punctuation">\</span>
+      --cri-socket /run/cri-containerd/cri-containerd.sock <span class="token punctuation">\</span>
+      <span class="token parameter variable">--v</span> <span class="token number">5</span> <span class="token punctuation">\</span>
+      --ignore-preflight-errors<span class="token operator">=</span>all
+</code></pre>
+<ul>
+<li><code>--pod-network-cidr 10.244.0.0/16</code> &#x53C2;&#x6570;&#x4E0E;&#x540E;&#x7EED; CNI &#x63D2;&#x4EF6;&#x6709;&#x5173;&#xFF0C;&#x8FD9;&#x91CC;&#x4EE5; <code>flannel</code> &#x4E3A;&#x4F8B;&#xFF0C;&#x82E5;&#x540E;&#x7EED;&#x90E8;&#x7F72;&#x5176;&#x4ED6;&#x7C7B;&#x578B;&#x7684;&#x7F51;&#x7EDC;&#x63D2;&#x4EF6;&#x8BF7;&#x66F4;&#x6539;&#x6B64;&#x53C2;&#x6570;&#x3002;</li>
+</ul>
+<blockquote>
+<p>&#x6267;&#x884C;&#x53EF;&#x80FD;&#x51FA;&#x73B0;&#x9519;&#x8BEF;&#xFF0C;&#x4F8B;&#x5982;&#x7F3A;&#x5C11;&#x4F9D;&#x8D56;&#x5305;&#xFF0C;&#x6839;&#x636E;&#x63D0;&#x793A;&#x5B89;&#x88C5;&#x5373;&#x53EF;&#x3002;</p>
+</blockquote>
+<p>&#x6267;&#x884C;&#x6210;&#x529F;&#x4F1A;&#x8F93;&#x51FA;</p>
+<pre class="language-"><code class="lang-bash"><span class="token punctuation">..</span>.
+<span class="token punctuation">[</span>addons<span class="token punctuation">]</span> Applied essential addon: CoreDNS
+I1116 <span class="token number">12</span>:35:13.270407   <span class="token number">86677</span> request.go:538<span class="token punctuation">]</span> Throttling request took <span class="token number">181</span>.409184ms, request: POST:https://192.168.199.100:6443/api/v1/namespaces/kube-system/serviceaccounts
+I1116 <span class="token number">12</span>:35:13.470292   <span class="token number">86677</span> request.go:538<span class="token punctuation">]</span> Throttling request took <span class="token number">186</span>.088112ms, request: POST:https://192.168.199.100:6443/api/v1/namespaces/kube-system/configmaps
+<span class="token punctuation">[</span>addons<span class="token punctuation">]</span> Applied essential addon: kube-proxy
+
+Your Kubernetes control-plane has initialized successfully<span class="token operator">!</span>
+
+To start using your cluster, you need to run the following as a regular user:
+
+  <span class="token function">mkdir</span> <span class="token parameter variable">-p</span> <span class="token environment constant">$HOME</span>/.kube
+  <span class="token function">sudo</span> <span class="token function">cp</span> <span class="token parameter variable">-i</span> /etc/kubernetes/admin.conf <span class="token environment constant">$HOME</span>/.kube/config
+  <span class="token function">sudo</span> <span class="token function">chown</span> <span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> <span class="token parameter variable">-u</span><span class="token variable">)</span></span><span class="token builtin class-name">:</span><span class="token variable"><span class="token variable">$(</span><span class="token function">id</span> <span class="token parameter variable">-g</span><span class="token variable">)</span></span> <span class="token environment constant">$HOME</span>/.kube/config
+
+You should now deploy a pod network to the cluster.
+Run <span class="token string">&quot;kubectl apply -f [podnetwork].yaml&quot;</span> with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can <span class="token function">join</span> any number of worker nodes by running the following on each as root:
+
+kubeadm <span class="token function">join</span> <span class="token number">192.168</span>.199.100:6443 <span class="token parameter variable">--token</span> cz81zt.orsy9gm9v649e5lf <span class="token punctuation">\</span>
+    --discovery-token-ca-cert-hash sha256:5edb316fd0d8ea2792cba15cdf1c899a366f147aa03cba52d4e5c5884ad836fe
+</code></pre>
+<h3 id="node-&#x5DE5;&#x4F5C;&#x8282;&#x70B9;"><a name="node-&#x5DE5;&#x4F5C;&#x8282;&#x70B9;" class="anchor-navigation-ex-anchor" href="#node-&#x5DE5;&#x4F5C;&#x8282;&#x70B9;"><i class="fa fa-link" aria-hidden="true"></i></a>node &#x5DE5;&#x4F5C;&#x8282;&#x70B9;</h3>
+<p>&#x5728; <strong>&#x53E6;&#x4E00;&#x4E3B;&#x673A;</strong> &#x91CD;&#x590D; <strong>&#x90E8;&#x7F72;</strong> &#x5C0F;&#x8282;&#x4EE5;&#x524D;&#x7684;&#x6B65;&#x9AA4;&#xFF0C;&#x5B89;&#x88C5;&#x914D;&#x7F6E;&#x597D; kubelet&#x3002;&#x6839;&#x636E;&#x63D0;&#x793A;&#xFF0C;&#x52A0;&#x5165;&#x5230;&#x96C6;&#x7FA4;&#x3002;</p>
+<pre class="language-"><code class="lang-bash">$ systemctl <span class="token builtin class-name">enable</span> cri-containerd
+
+$ systemctl start cri-containerd
+
+$ kubeadm <span class="token function">join</span> <span class="token number">192.168</span>.199.100:6443 <span class="token punctuation">\</span>
+    <span class="token parameter variable">--token</span> cz81zt.orsy9gm9v649e5lf <span class="token punctuation">\</span>
+    --discovery-token-ca-cert-hash sha256:5edb316fd0d8ea2792cba15cdf1c899a366f147aa03cba52d4e5c5884ad836fe <span class="token punctuation">\</span>
+    --cri-socket /run/cri-containerd/cri-containerd.sock
+</code></pre>
+<h2 id="&#x67E5;&#x770B;&#x670D;&#x52A1;"><a name="&#x67E5;&#x770B;&#x670D;&#x52A1;" class="anchor-navigation-ex-anchor" href="#&#x67E5;&#x770B;&#x670D;&#x52A1;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x67E5;&#x770B;&#x670D;&#x52A1;</h2>
+<p>&#x6240;&#x6709;&#x670D;&#x52A1;&#x542F;&#x52A8;&#x540E;&#xFF0C;&#x901A;&#x8FC7; <code>crictl</code> &#x67E5;&#x770B;&#x672C;&#x5730;&#x5B9E;&#x9645;&#x8FD0;&#x884C;&#x7684;&#x5BB9;&#x5668;&#x3002;&#x8FD9;&#x4E9B;&#x670D;&#x52A1;&#x5927;&#x6982;&#x5206;&#x4E3A;&#x4E09;&#x7C7B;&#xFF1A;&#x4E3B;&#x8282;&#x70B9;&#x670D;&#x52A1;&#x3001;&#x5DE5;&#x4F5C;&#x8282;&#x70B9;&#x670D;&#x52A1;&#x548C;&#x5176;&#x5B83;&#x670D;&#x52A1;&#x3002;</p>
+<pre class="language-"><code class="lang-bash"><span class="token assign-left variable">CONTAINER_RUNTIME_ENDPOINT</span><span class="token operator">=</span>/run/cri-containerd/cri-containerd.sock crictl <span class="token function">ps</span> <span class="token parameter variable">-a</span>
+</code></pre>
+<h3 id="&#x4E3B;&#x8282;&#x70B9;&#x670D;&#x52A1;"><a name="&#x4E3B;&#x8282;&#x70B9;&#x670D;&#x52A1;" class="anchor-navigation-ex-anchor" href="#&#x4E3B;&#x8282;&#x70B9;&#x670D;&#x52A1;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4E3B;&#x8282;&#x70B9;&#x670D;&#x52A1;</h3>
+<ul>
+<li><p><code>apiserver</code> &#x662F;&#x6574;&#x4E2A;&#x7CFB;&#x7EDF;&#x7684;&#x5BF9;&#x5916;&#x63A5;&#x53E3;&#xFF0C;&#x63D0;&#x4F9B; RESTful &#x65B9;&#x5F0F;&#x4F9B;&#x5BA2;&#x6237;&#x7AEF;&#x548C;&#x5176;&#x5B83;&#x7EC4;&#x4EF6;&#x8C03;&#x7528;&#xFF1B;</p>
+</li>
+<li><p><code>scheduler</code> &#x8D1F;&#x8D23;&#x5BF9;&#x8D44;&#x6E90;&#x8FDB;&#x884C;&#x8C03;&#x5EA6;&#xFF0C;&#x5206;&#x914D;&#x67D0;&#x4E2A; pod &#x5230;&#x67D0;&#x4E2A;&#x8282;&#x70B9;&#x4E0A;&#xFF1B;</p>
+</li>
+<li><p><code>controller-manager</code> &#x8D1F;&#x8D23;&#x7BA1;&#x7406;&#x63A7;&#x5236;&#x5668;&#xFF0C;&#x5305;&#x62EC; endpoint-controller&#xFF08;&#x5237;&#x65B0;&#x670D;&#x52A1;&#x548C; pod &#x7684;&#x5173;&#x8054;&#x4FE1;&#x606F;&#xFF09;&#x548C; replication-controller&#xFF08;&#x7EF4;&#x62A4;&#x67D0;&#x4E2A; pod &#x7684;&#x590D;&#x5236;&#x4E3A;&#x914D;&#x7F6E;&#x7684;&#x6570;&#x503C;&#xFF09;&#x3002;</p>
+</li>
+</ul>
+<h3 id="&#x5DE5;&#x4F5C;&#x8282;&#x70B9;&#x670D;&#x52A1;"><a name="&#x5DE5;&#x4F5C;&#x8282;&#x70B9;&#x670D;&#x52A1;" class="anchor-navigation-ex-anchor" href="#&#x5DE5;&#x4F5C;&#x8282;&#x70B9;&#x670D;&#x52A1;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x5DE5;&#x4F5C;&#x8282;&#x70B9;&#x670D;&#x52A1;</h3>
+<ul>
+<li><code>proxy</code> &#x4E3A; pod &#x4E0A;&#x7684;&#x670D;&#x52A1;&#x63D0;&#x4F9B;&#x8BBF;&#x95EE;&#x7684;&#x4EE3;&#x7406;&#x3002;</li>
+</ul>
+<h3 id="&#x5176;&#x5B83;&#x670D;&#x52A1;"><a name="&#x5176;&#x5B83;&#x670D;&#x52A1;" class="anchor-navigation-ex-anchor" href="#&#x5176;&#x5B83;&#x670D;&#x52A1;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x5176;&#x5B83;&#x670D;&#x52A1;</h3>
+<ul>
+<li>Etcd &#x662F;&#x6240;&#x6709;&#x72B6;&#x6001;&#x7684;&#x5B58;&#x50A8;&#x6570;&#x636E;&#x5E93;&#xFF1B;</li>
+</ul>
+<h2 id="&#x4F7F;&#x7528;"><a name="&#x4F7F;&#x7528;" class="anchor-navigation-ex-anchor" href="#&#x4F7F;&#x7528;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4F7F;&#x7528;</h2>
+<p>&#x5C06; <code>/etc/kubernetes/admin.conf</code> &#x590D;&#x5236;&#x5230; <code>~/.kube/config</code></p>
+<p>&#x6267;&#x884C; <code>$ kubectl get all -A</code> &#x67E5;&#x770B;&#x542F;&#x52A8;&#x7684;&#x670D;&#x52A1;&#x3002;</p>
+<p>&#x7531;&#x4E8E;&#x672A;&#x90E8;&#x7F72; CNI &#x63D2;&#x4EF6;&#xFF0C;CoreDNS &#x672A;&#x6B63;&#x5E38;&#x542F;&#x52A8;&#x3002;&#x5982;&#x4F55;&#x4F7F;&#x7528; Kubernetes&#xFF0C;&#x8BF7;&#x53C2;&#x8003;&#x540E;&#x7EED;&#x7AE0;&#x8282;&#x3002;</p>
+<h2 id="&#x90E8;&#x7F72;-cni"><a name="&#x90E8;&#x7F72;-cni" class="anchor-navigation-ex-anchor" href="#&#x90E8;&#x7F72;-cni"><i class="fa fa-link" aria-hidden="true"></i></a>&#x90E8;&#x7F72; CNI</h2>
+<p>&#x8FD9;&#x91CC;&#x4EE5; <code>flannel</code> &#x4E3A;&#x4F8B;&#x8FDB;&#x884C;&#x4ECB;&#x7ECD;&#x3002;</p>
+<h3 id="flannel"><a name="flannel" class="anchor-navigation-ex-anchor" href="#flannel"><i class="fa fa-link" aria-hidden="true"></i></a>flannel</h3>
+<p>&#x68C0;&#x67E5; podCIDR &#x8BBE;&#x7F6E;</p>
+<pre class="language-"><code class="lang-bash">$ kubectl get <span class="token function">node</span> <span class="token parameter variable">-o</span> yaml <span class="token operator">|</span> <span class="token function">grep</span> CIDR
+
+<span class="token comment"># &#x8F93;&#x51FA;</span>
+    podCIDR: <span class="token number">10.244</span>.0.0/16
+    podCIDRs:
+</code></pre>
+<pre class="language-"><code class="lang-bash">$ kubectl apply <span class="token parameter variable">-f</span> https://raw.githubusercontent.com/coreos/flannel/v0.11.0/Documentation/kube-flannel.yml
+</code></pre>
+<h2 id="master-&#x8282;&#x70B9;&#x9ED8;&#x8BA4;&#x4E0D;&#x80FD;&#x8FD0;&#x884C;-pod"><a name="master-&#x8282;&#x70B9;&#x9ED8;&#x8BA4;&#x4E0D;&#x80FD;&#x8FD0;&#x884C;-pod" class="anchor-navigation-ex-anchor" href="#master-&#x8282;&#x70B9;&#x9ED8;&#x8BA4;&#x4E0D;&#x80FD;&#x8FD0;&#x884C;-pod"><i class="fa fa-link" aria-hidden="true"></i></a>master &#x8282;&#x70B9;&#x9ED8;&#x8BA4;&#x4E0D;&#x80FD;&#x8FD0;&#x884C; pod</h2>
+<p>&#x5982;&#x679C;&#x7528; <code>kubeadm</code> &#x90E8;&#x7F72;&#x4E00;&#x4E2A;&#x5355;&#x8282;&#x70B9;&#x96C6;&#x7FA4;&#xFF0C;&#x9ED8;&#x8BA4;&#x60C5;&#x51B5;&#x4E0B;&#x65E0;&#x6CD5;&#x4F7F;&#x7528;&#xFF0C;&#x8BF7;&#x6267;&#x884C;&#x4EE5;&#x4E0B;&#x547D;&#x4EE4;&#x89E3;&#x9664;&#x9650;&#x5236;</p>
+<pre class="language-"><code class="lang-bash">$ kubectl taint nodes <span class="token parameter variable">--all</span> node-role.kubernetes.io/master-
+
+<span class="token comment"># &#x6062;&#x590D;&#x9ED8;&#x8BA4;&#x503C;</span>
+<span class="token comment"># $ kubectl taint nodes NODE_NAME node-role.kubernetes.io/master=true:NoSchedule</span>
+</code></pre>
+<h2 id="&#x53C2;&#x8003;&#x6587;&#x6863;"><a name="&#x53C2;&#x8003;&#x6587;&#x6863;" class="anchor-navigation-ex-anchor" href="#&#x53C2;&#x8003;&#x6587;&#x6863;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x53C2;&#x8003;&#x6587;&#x6863;</h2>
+<ul>
+<li><a href="https://kubernetes.io/zh/docs/setup/production-environment/tools/kubeadm/install-kubeadm/" target="_blank">&#x5B98;&#x65B9;&#x6587;&#x6863;</a></li>
+<li><a href="https://kubernetes.io/docs/setup/production-environment/container-runtimes/#containerd" target="_blank">Container runtimes</a></li>
+</ul>
+<footer class="page-footer"><span class="copyright">Copyright &#xA9; Zhenhai Gao 2021 all right reserved</span><span class="footer-modification">&#x53D1;&#x5E03;&#x65F6;&#x95F4;&#xFF1A;
+2024-06-10 23:03:15
+</span></footer>
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="./" class="navigation navigation-prev " aria-label="Previous page: 集群安装部署">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="docker-desktop.html" class="navigation navigation-next " aria-label="Next page: 在 Docker Desktop 使用">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"使用 kubeadm 部署 kubernetes(CRI 使用 containerd)","level":"1.2.6.1","depth":3,"next":{"title":"在 Docker Desktop 使用","level":"1.2.6.2","depth":3,"path":"kubernetes/install/docker-desktop.md","ref":"kubernetes/install/docker-desktop.md","articles":[]},"previous":{"title":"集群安装部署","level":"1.2.6","depth":2,"path":"kubernetes/install/README.md","ref":"kubernetes/install/README.md","articles":[{"title":"使用 kubeadm 部署 kubernetes(CRI 使用 containerd)","level":"1.2.6.1","depth":3,"path":"kubernetes/install/kubeadm.md","ref":"kubernetes/install/kubeadm.md","articles":[]},{"title":"在 Docker Desktop 使用","level":"1.2.6.2","depth":3,"path":"kubernetes/install/docker-desktop.md","ref":"kubernetes/install/docker-desktop.md","articles":[]},{"title":"一步步部署 kubernetes 集群","level":"1.2.6.3","depth":3,"path":"kubernetes/install/systemd.md","ref":"kubernetes/install/systemd.md","articles":[]},{"title":"部署 Dashboard","level":"1.2.6.4","depth":3,"path":"kubernetes/install/dashboard.md","ref":"kubernetes/install/dashboard.md","articles":[]}]},"dir":"ltr"},"config":{"plugins":["-sharing","-highlight","-default-theme","-lunr","-search","ancre-navigation","pageview-count","sharing-plus","multipart","code","include-codeblock","search-pro","emphasize","flexible-alerts","advanced-emoji","hide-element","prism","prism-themes","auto-scroll-table","accordion","toggle-chapters","expandable-chapters-small","splitter","theme-comscore","tbfed-pagefooter","donate","image-captions","disqus"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"tbfed-pagefooter":{"copyright":"Copyright © Zhenhai Gao 2021","modify_label":"发布时间：","modify_format":"YYYY-MM-DD HH:mm:ss"},"prism":{},"disqus":{"useIdentifier":false,"shortName":"note-dreamxos-com"},"emphasize":{},"splitter":{},"search-pro":{},"accordion":{},"sharing-plus":{"qq":false,"all":["facebook","google","twitter","instapaper","linkedin","pocket","stumbleupon"],"douban":false,"facebook":true,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":true,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"auto-scroll-table":{},"multipart":{},"code":{"copyButtons":true},"donate":{"alipay":"/images/zhifubao.png","alipayText":"支付宝打赏","button":"赏","title":"鼓励一下","wechat":"/images/weixin.png","wechatText":"微信打赏"},"hide-element":{"elements":[".gitbook-link"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-comscore":{},"pageview-count":{},"prism-themes":{},"ancre-navigation":{"associatedWithSummary":true,"float":{"level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false},"mode":"float","multipleH1":true,"pageTop":{"level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false},"printLog":false,"showLevel":true},"expandable-chapters-small":{},"flexible-alerts":{"danger":{"className":"danger","icon":"fa fa-ban","label":"Attention"},"note":{"className":"info","icon":"fa fa-info-circle","label":"Note"},"style":"callout","tip":{"className":"tip","icon":"fa fa-lightbulb-o","label":"Tip"},"warning":{"className":"warning","icon":"fa fa-exclamation-triangle","label":"Warning"}},"advanced-emoji":{"embedEmojis":false},"include-codeblock":{"check":false,"edit":false,"fixlang":false,"lang":"","template":"default","theme":"chrome","unindent":false},"sharing":{"facebook":true,"twitter":true,"weibo":true,"qq":true,"all":["douban","google","instapaper","linkedin","twitter","messenger","qzone","viber","whatsapp"]},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"toggle-chapters":{},"image-captions":{"attributes":{"width":"800"},"caption":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","variable_name":"_pictures"}},"theme":"default","author":"Zhenhai Gao","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{"_pictures":[{"backlink":"kubernetes/architecture-design.html#fig1.2.3.1","level":"1.2.3","list_caption":"Figure: Kubernetes 架构","alt":"Kubernetes 架构","nro":1,"url":"./images/k8s-architecture.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Kubernetes 架构","attributes":{"width":"800"},"skip":false,"key":"1.2.3.1"},{"backlink":"kubernetes/architecture-design.html#fig1.2.3.2","level":"1.2.3","list_caption":"Figure: Proxy 代理对服务的请求","alt":"Proxy 代理对服务的请求","nro":2,"url":"./images/kube-proxy.png","index":2,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Proxy 代理对服务的请求","attributes":{"width":"800"},"skip":false,"key":"1.2.3.2"},{"backlink":"docker/introduction/what.html#fig1.3.1.1.1","level":"1.3.1.1","list_caption":"Figure: Docker 架构","alt":"Docker 架构","nro":3,"url":"https://docs.microsoft.com/en-us/virtualization/windowscontainers/deploy-containers/media/docker-on-linux.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Docker 架构","attributes":{"width":"800"},"skip":false,"key":"1.3.1.1.1"},{"backlink":"docker/introduction/what.html#fig1.3.1.1.2","level":"1.3.1.1","list_caption":"Figure: 传统虚拟化","alt":"传统虚拟化","nro":4,"url":"./images/virtualization.png","index":2,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"传统虚拟化","attributes":{"width":"800"},"skip":false,"key":"1.3.1.1.2"},{"backlink":"docker/introduction/what.html#fig1.3.1.1.3","level":"1.3.1.1","list_caption":"Figure: Docker","alt":"Docker","nro":5,"url":"./images/docker.png","index":3,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Docker","attributes":{"width":"800"},"skip":false,"key":"1.3.1.1.3"},{"backlink":"docker/docker-install/offline.html#fig1.3.3.6.1","level":"1.3.3.6","list_caption":"Figure: Docker-offile-install-top","alt":"Docker-offile-install-top","nro":6,"url":"images/image-20200412202617411.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Docker-offile-install-top","attributes":{"width":"800"},"skip":false,"key":"1.3.3.6.1"},{"backlink":"docker/advanced-network/index.html#fig1.3.9.1","level":"1.3.9","list_caption":"Figure: Docker 网络","alt":"Docker 网络","nro":7,"url":"./images/network.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Docker 网络","attributes":{"width":"800"},"skip":false,"key":"1.3.9.1"},{"backlink":"docker/underly/arch.html#fig1.3.13.1.1","level":"1.3.13.1","list_caption":"Figure: Docker 基本架构","alt":"Docker 基本架构","nro":8,"url":"./images/docker-arch.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Docker 基本架构","attributes":{"width":"800"},"skip":false,"key":"1.3.13.1.1"},{"backlink":"docker/cases/os/busybox.html#fig1.3.14.1.1","level":"1.3.14.1","list_caption":"Figure: Busybox - Linux 瑞士军刀","alt":"Busybox - Linux 瑞士军刀","nro":9,"url":"./images/busybox-logo.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Busybox - Linux 瑞士军刀","attributes":{"width":"800"},"skip":false,"key":"1.3.14.1.1"},{"backlink":"docker/cases/os/alpine.html#fig1.3.14.2.1","level":"1.3.14.2","list_caption":"Figure: Alpine Linux 操作系统","alt":"Alpine Linux 操作系统","nro":10,"url":"./images/alpinelinux-logo.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Alpine Linux 操作系统","attributes":{"width":"800"},"skip":false,"key":"1.3.14.2.1"},{"backlink":"docker/cases/os/debian.html#fig1.3.14.3.1","level":"1.3.14.3","list_caption":"Figure: Debian 操作系统","alt":"Debian 操作系统","nro":11,"url":"./images/debian-logo.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Debian 操作系统","attributes":{"width":"800"},"skip":false,"key":"1.3.14.3.1"},{"backlink":"docker/cases/os/debian.html#fig1.3.14.3.2","level":"1.3.14.3","list_caption":"Figure: Ubuntu 操作系统","alt":"Ubuntu 操作系统","nro":12,"url":"./images/ubuntu-logo.jpg","index":2,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Ubuntu 操作系统","attributes":{"width":"800"},"skip":false,"key":"1.3.14.3.2"},{"backlink":"docker/cases/os/centos.html#fig1.3.14.4.1","level":"1.3.14.4","list_caption":"Figure: CentOS 操作系统","alt":"CentOS 操作系统","nro":13,"url":"./images/centos-logo.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"CentOS 操作系统","attributes":{"width":"800"},"skip":false,"key":"1.3.14.4.1"},{"backlink":"docker/cases/os/centos.html#fig1.3.14.4.2","level":"1.3.14.4","list_caption":"Figure: Fedora 操作系统","alt":"Fedora 操作系统","nro":14,"url":"./images/fedora-logo.png","index":2,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Fedora 操作系统","attributes":{"width":"800"},"skip":false,"key":"1.3.14.4.2"},{"backlink":"docker/appendix/command/docker.html#fig1.3.15.3.1.1","level":"1.3.15.3.1","list_caption":"Figure: Docker 命令总结","alt":"Docker 命令总结","nro":15,"url":"../images/cmd-logic.png","index":1,"caption_template":"图_PAGE_IMAGE_NUMBER_ _CAPTION_","label":"Docker 命令总结","attributes":{"width":"800"},"skip":false,"key":"1.3.15.3.1.1"}]},"title":"个人博客","language":"zh-hans","links":{"sidebar":{"Kubernetes 文档":"https://kubernetes.io/docs/concepts/","CNCF 技术全景图":"https://landscape.cncf.io/"}},"gitbook":"*"},"file":{"path":"kubernetes/install/kubeadm.md","mtime":"2024-06-10T15:03:15.271Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2024-06-10T15:04:45.970Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-pageview-count/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing-plus/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-code/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-pro/jquery.mark.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search-pro/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-flexible-alerts/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-hide-element/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-auto-scroll-table/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-accordion/accordionSelector.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-toggle-chapters/toggle.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-splitter/splitter.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-donate/plugin.js"></script>
+        
+    
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/URI.js/1.16.1/URI.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-disqus/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-theme-comscore/test.js"></script>
+        
+    
+
+    </body>
+</html>
+

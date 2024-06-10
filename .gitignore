@@ -1,0 +1,10 @@
+.htaccess
+
+*.swp
+*.temp
+*.tmp
+~*
+node_modules/
+_book/
+
+.idea/*
